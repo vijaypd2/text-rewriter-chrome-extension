@@ -1,0 +1,17 @@
+{
+    "manifest_version": 3,
+    "name": "Text Rewriter Extension",
+    "version": "1.0",
+    "permissions": ["contextMenus", "activeTab", "scripting", "storage"],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "host_permissions": [
+      "*://*/*"
+    ],
+    "action": {
+      "default_popup": "popup.html",
+      "default_icon": {}
+    }
+  }
+  
