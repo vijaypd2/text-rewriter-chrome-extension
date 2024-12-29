@@ -12,6 +12,7 @@
     "action": {
       "default_popup": "popup.html",
       "default_icon": {}
-    }
+    },
+    "options_page": "options.html"
   }
   

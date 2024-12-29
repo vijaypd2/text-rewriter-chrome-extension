@@ -1,5 +1,8 @@
-const apiKey = ""; // Replace with your actual API key
 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`;
+
+const buildApiUrl = (apiKey) => {
+  return `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`;
+};
 
 const buildRequestData = (text) => {
   return {
@@ -20,10 +23,8 @@ const buildRequestData = (text) => {
       maxOutputTokens: 8192,
       responseMimeType: "application/json",
     },
-  }
-
-}
-
+  };
+};
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
@@ -35,28 +36,39 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId === "rewriteText" && info.selectionText) {
-    // Call Gemini API with selected text
-    // const rewrittenText = await callGeminiAPI(info.selectionText);
-    // await callGeminiAPI(info.selectionText);
     const rewrittenText = await generateContent(info.selectionText);
-    // const rewrittenText = info.selectionText;
+
     chrome.storage.local.set({ rewrittenText }, () => {
       console.log("Rewritten text saved to local storage.");
     });
     chrome.action.openPopup();
-
-    // Send the rewritten text to content script for popup
-    // chrome.scripting.executeScript({
-    //   target: { tabId: tab.id },
-    //   func: displayPopup,
-    //   args: [rewrittenText]
-    // });
   }
 });
 
-async function generateContent(text) { 
+function getApiKeyFromStorage() {
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.get("geminiApiKey", (data) => {
+      if (chrome.runtime.lastError) {
+        reject(new Error("Error retrieving API key from storage"));
+      } else {
+        resolve(data.geminiApiKey);
+      }
+    });
+  });
+}
+
+async function generateContent(text) {
   try {
-    const response = await fetch(apiUrl, {
+    // Retrieve the API key using Promise
+    const apiKey = await getApiKeyFromStorage();
+    console.log(`here: ${apiKey}`);
+
+    if (!apiKey) {
+      console.log("API key not found");
+      return;
+    }
+
+    const response = await fetch(buildApiUrl(apiKey), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -75,21 +87,3 @@ async function generateContent(text) {
     console.error("Error generating content:", error);
   }
 }
-
-// Function to call Gemini API
-// async function callGeminiAPI(text) {
-//   const apiUrl = "https://jsonplaceholder.typicode.com/posts"; // Replace with actual API URL
-//   const response = await fetch(apiUrl, {
-//     method: "GET",
-//     headers: { "Content-Type": "application/json" },
-//   });
-
-//   const data = await response.json();
-//   console.log(data);
-//   return data.rewrittenText; // Replace with actual API response structure
-// }
-
-// Function to display popup
-// function displayPopup(text) {
-//   alert(`Rewritten Text: ${text}`);
-// }
