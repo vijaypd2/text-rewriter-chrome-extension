@@ -1,10 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xml:lang="en">
 <head>
   <title>Rewritten Text</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 10px; }
-    textarea { width: 100%; height: 150px; margin-bottom: 10px; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 10px;
+      margin: 0;
+      width: 400px;
+      height: 100%;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      resize: both; /* Allow resizing in both directions */
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    #copyButton {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    #copyButton:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
 <body>
