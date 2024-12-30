@@ -2,14 +2,18 @@ const buildApiUrl = (apiKey) => {
   return `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`;
 };
 
-const buildRequestData = (text) => {
+const buildRequestData = (text, tone) => {
+  if (!tone || tone === "") {
+    tone = "Keep the tone technical.";
+  }
   return {
     contents: [
       {
         role: "user",
         parts: [
           {
-            text: `I am a software engineer. Please rewrite the following text to correct all grammar and typographical errors while keeping the overall tone of the input. Ensure the rewritten version is clear, concise, and engaging, with no more than a 15% increase in length compared to the input:"${text}"`,
+            text: `I am a software engineer. Please rewrite the following text to correct all grammar and typographical errors while keeping the overall tone consistent with the tone described below. Ensure the rewritten version is clear, concise, and engaging, with no more than a 15% increase in length compared to the input.
+            Tone: "${tone}" Text to Rewrite: "${text}" Note: The rewritten text should adhere strictly to the specified tone.`,
           },
         ],
       },
@@ -35,7 +39,8 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   await removeFromLocalStorage("rewrittenText");
   if (info.menuItemId === "rewriteText" && info.selectionText) {
-    const rewrittenText = await generateContent(info.selectionText);
+    const savedTone = await getFromLocalStorage("promptTone");
+    const rewrittenText = await generateContent(info.selectionText, savedTone);
 
     chrome.storage.local.set({ rewrittenText }, () => {
       console.log("Rewritten text saved to local storage.");
@@ -56,11 +61,10 @@ function getApiKeyFromStorage() {
   });
 }
 
-async function generateContent(text) {
+async function generateContent(text, tone) {
   try {
     // Retrieve the API key using Promise
     const apiKey = await getApiKeyFromStorage();
-    console.log(`here: ${apiKey}`);
 
     if (!apiKey) {
       console.log("API key not found");
@@ -72,7 +76,7 @@ async function generateContent(text) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(buildRequestData(text)),
+      body: JSON.stringify(buildRequestData(text, tone)),
     });
 
     if (!response.ok) {
@@ -94,6 +98,18 @@ function removeFromLocalStorage(key) {
         reject(chrome.runtime.lastError);
       } else {
         resolve();
+      }
+    });
+  });
+}
+
+function getFromLocalStorage(key) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get(key, (data) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(data[key]);
       }
     });
   });
