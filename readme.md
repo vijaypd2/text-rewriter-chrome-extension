@@ -2,6 +2,9 @@
 
 This Chrome extension allows users to rewrite selected text on a webpage using the Gemini API. It's a simple yet powerful tool designed to help users generate improved or rewritten versions of text directly from the browser.
 
+![](https://github.com/vijaypd2/text-rewriter-chrome-extension/blob/main/samples/sample_run.gif)
+
+
 ---
 
 ## Features
