@@ -27,7 +27,7 @@ const buildRequestData = (text) => {
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: "rewriteText",
-    title: "Rewrite Selected Text",
+    title: "Rewrite selected text using T(re)",
     contexts: ["selection"],
   });
 });
