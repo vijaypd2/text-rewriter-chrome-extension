@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const textArea = document.getElementById("rewrittenText");
       textArea.select();
       document.execCommand("copy");
-      alert("Copied to clipboard!");
     });
   });
   

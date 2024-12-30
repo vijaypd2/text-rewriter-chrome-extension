@@ -1,5 +1,3 @@
-const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`;
-
 const buildApiUrl = (apiKey) => {
   return `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`;
 };
@@ -35,6 +33,7 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+  await removeFromLocalStorage("rewrittenText");
   if (info.menuItemId === "rewriteText" && info.selectionText) {
     const rewrittenText = await generateContent(info.selectionText);
 
@@ -86,4 +85,16 @@ async function generateContent(text) {
     console.error(error);
     console.error("Error generating content:", error);
   }
+}
+
+function removeFromLocalStorage(key) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.remove(key, () => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve();
+      }
+    });
+  });
 }
